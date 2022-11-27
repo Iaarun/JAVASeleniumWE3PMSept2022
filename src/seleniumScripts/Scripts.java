@@ -1,5 +1,6 @@
 package seleniumScripts;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Set;
 
@@ -9,6 +10,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
 
 public class Scripts {
@@ -23,9 +25,69 @@ public class Scripts {
 	public static void main(String[] args) throws InterruptedException {
 		Scripts sc = new Scripts();
 		sc.launchBrowser();
-		sc.handleAlert();
+		sc.handleautosuggestion();
 	}
-	
+
+	public void handleautosuggestion() {
+		driver.get("https://jqueryui.com/autocomplete/");
+		driver.switchTo().frame(0);
+		driver.findElement(By.xpath("//input[@id='tags']")).sendKeys("t");
+		List<WebElement> option = driver.findElements(By.xpath("ui-menu-item-wrapper"));
+		System.out.println(option.size());
+		option.forEach(x->{
+			if(x.getText().equalsIgnoreCase("Python")) {
+				x.click();
+			}
+		});
+
+	}
+
+	public void handleMultiplecheckbox() {
+		driver.get("https://bonigarcia.dev/selenium-webdriver-java/web-form.html");
+		List<WebElement> allcheckbox = driver.findElements(By.xpath("//input[@type='checkbox']"));
+
+		allcheckbox.forEach(x -> {
+			if (!x.isSelected()) {
+				x.click();
+			}
+		});
+
+	}
+
+	public void slider() {
+		driver.get("https://jqueryui.com/slider/");
+		driver.switchTo().frame(0);
+		WebElement slider = driver.findElement(By.xpath("//div[@id='slider']/span"));
+
+		Actions action = new Actions(driver);
+		action.clickAndHold(slider).moveByOffset(500, 0).release().build().perform();
+	}
+
+	public void dragandDrop() {
+		driver.get("https://jqueryui.com/droppable/");
+		driver.switchTo().frame(0);
+		WebElement drag = driver.findElement(By.id("draggable"));
+		WebElement drop = driver.findElement(By.id("droppable"));
+
+		Actions action = new Actions(driver);
+
+		// action.clickAndHold(drag).moveToElement(drop).release().build().perform();
+		action.dragAndDrop(drag, drop).perform();
+
+	}
+
+	public void handleFrames() {
+		driver.get("https://jqueryui.com/droppable/");
+		WebElement frame = driver.findElement(By.xpath("//iframe[@class='demo-frame']"));
+		driver.switchTo().frame(0);
+		WebElement drag = driver.findElement(By.id("draggable"));
+		System.out.println(drag.isDisplayed());
+
+		driver.switchTo().defaultContent();
+		WebElement img = driver.findElement(By.xpath("//a[@href='/']"));
+		System.out.println(img.isDisplayed());
+	}
+
 	public void handleAlert() {
 		driver.get("http://www.tizag.com/javascriptT/javascriptprompt.php");
 		WebElement btn = driver.findElement(By.xpath("//input[@value='Say my name!']"));
@@ -38,9 +100,7 @@ public class Scripts {
 		alert.accept();
 		System.out.println(alert.getText());
 		alert.dismiss();
-		
-		
-		
+
 	}
 
 	public void scroll() {
@@ -50,14 +110,13 @@ public class Scripts {
 
 		// random scroll
 		// js.executeScript("window.scrollBy(0,500)", "");
-		
+
 		// scroll till element into view
-	//	js.executeScript("arguments[0].scrollIntoView();", btn);
-		
-		//scroll till document height
-		
+		// js.executeScript("arguments[0].scrollIntoView();", btn);
+
+		// scroll till document height
+
 		js.executeScript("window.scrollBy(0,document.body.scrollHeight)", "");
-		
 
 	}
 
@@ -151,6 +210,7 @@ public class Scripts {
 	public void launchBrowser() throws InterruptedException {
 		driver = new ChromeDriver();
 		driver.manage().window().maximize();
+		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 //		Thread.sleep(1000);
 //		driver.quit();
 
