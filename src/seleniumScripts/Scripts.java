@@ -1,17 +1,24 @@
 package seleniumScripts;
 
+import java.awt.RenderingHints.Key;
+import java.awt.Robot;
 import java.time.Duration;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.Select;
+
+import io.opentelemetry.exporter.logging.SystemOutLogRecordExporter;
 
 public class Scripts {
 
@@ -25,17 +32,76 @@ public class Scripts {
 	public static void main(String[] args) throws InterruptedException {
 		Scripts sc = new Scripts();
 		sc.launchBrowser();
-		sc.handleautosuggestion();
+		sc.multipletabs();
+	}
+	public void multipletabs() {
+		LinkedHashSet<String> lset = new LinkedHashSet<>();
+		driver.get("https://www.naukri.com/");
+		String firsttab = driver.getWindowHandle();
+		lset.add(firsttab);
+		WebElement servicestab = driver.findElement(By.xpath("//div[normalize-space()='Services']"));
+
+		WebElement companiesTab = driver.findElement(By.xpath("//div[normalize-space()='Companies']"));
+		
+		Actions action = new Actions(driver);
+
+		action.keyDown(Keys.CONTROL).click(servicestab).keyUp(Keys.CONTROL).build().perform();
+		lset.addAll(driver.getWindowHandles());
+		action.keyDown(Keys.CONTROL).click(companiesTab).keyUp(Keys.CONTROL).build().perform();
+		lset.addAll(driver.getWindowHandles());
+		// Set<String> allids = driver.getWindowHandles();
+
+		Iterator<String> it = lset.iterator();
+		String fid = it.next();
+		System.out.println(fid + "\n" + driver.getTitle());
+
+		String sid = it.next();
+		driver.switchTo().window(sid);
+		System.out.println(sid + "\n" + driver.getTitle());
+
+		String tid = it.next();
+		driver.switchTo().window(tid);
+		System.out.println(tid + "\n" + driver.getTitle());
+	}
+
+
+	public void handlemultipleWindows() {
+		driver.get("https://www.naukri.com/");
+		String firstId = driver.getWindowHandle();
+		System.out.println(driver.getCurrentUrl());
+		WebElement services = driver.findElement(By.xpath("//div[normalize-space()='Services']"));
+		services.click();
+		
+		Set<String>  allId = driver.getWindowHandles();
+		allId.forEach(x->{
+			if(!x.equals(firstId)) {
+				driver.switchTo().window(x);
+				System.out.println(driver.getCurrentUrl());	
+			//	driver.close();
+				}
+		});
+		
+		driver.switchTo().window(firstId);
+		System.out.println(driver.getCurrentUrl());
+	}
+
+	public void fileUpload() {
+		driver.get("https://bonigarcia.dev/selenium-webdriver-java/web-form.html");
+		WebElement fileUpload = driver.findElement(By.name("my-file"));
+		fileUpload.sendKeys("D:\\screenshot");
+
+		// Robot robot = new Robot();
+
 	}
 
 	public void handleautosuggestion() {
 		driver.get("https://jqueryui.com/autocomplete/");
 		driver.switchTo().frame(0);
 		driver.findElement(By.xpath("//input[@id='tags']")).sendKeys("t");
-		List<WebElement> option = driver.findElements(By.xpath("ui-menu-item-wrapper"));
+		List<WebElement> option = driver.findElements(By.xpath("//ul[@id='ui-id-1']/li"));
 		System.out.println(option.size());
-		option.forEach(x->{
-			if(x.getText().equalsIgnoreCase("Python")) {
+		option.forEach(x -> {
+			if (x.getText().equalsIgnoreCase("Fortran")) {
 				x.click();
 			}
 		});
