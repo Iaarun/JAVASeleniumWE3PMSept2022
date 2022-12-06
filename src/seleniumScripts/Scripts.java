@@ -16,7 +16,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import io.opentelemetry.exporter.logging.SystemOutLogRecordExporter;
 
@@ -32,8 +34,76 @@ public class Scripts {
 	public static void main(String[] args) throws InterruptedException {
 		Scripts sc = new Scripts();
 		sc.launchBrowser();
-		sc.multipletabs();
+		sc.selSynchronization();
 	}
+	
+	
+	
+	public void selSynchronization() {
+		driver.get("https://bonigarcia.dev/selenium-webdriver-java/loading-images.html");
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+		
+		wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//p[contains(text(), 'Done')]")));
+		WebElement imgloaded= driver.findElement(By.xpath("//p[contains(text(), 'Done')]"));
+		System.out.println(imgloaded.getText());
+	}
+	public void handleCalender() {
+		driver.get("https://jqueryui.com/datepicker/");
+		driver.switchTo().frame(0);
+		driver.findElement(By.id("datepicker")).click();
+		String caltitle = driver.findElement(By.xpath("//div[@class='ui-datepicker-title']")).getText();
+		System.out.println(caltitle);
+		String month = caltitle.split(" ")[0].trim();
+		String year = caltitle.split(" ")[1].trim();
+
+		String nyear = String.valueOf(Integer.parseInt(year) + 1);
+
+		while (!(month.equals("December") && year.equals(nyear))) {
+			driver.findElement(By.xpath("//span[@class='ui-icon ui-icon-circle-triangle-e']")).click();
+			caltitle = driver.findElement(By.xpath("//div[@class='ui-datepicker-title']")).getText();
+			month = caltitle.split(" ")[0].trim();
+			year = caltitle.split(" ")[1].trim();
+		}
+
+		driver.findElement(By.xpath("//a[normalize-space()='25']")).click();
+	}
+
+	public void handleTables() {
+		driver.get("https://www.moneycontrol.com/markets/indian-indices/");
+		List<WebElement> col = driver.findElements(By.xpath("//table[@id='indicesTable']/thead/tr/th"));
+		int colnum = col.size();
+		System.out.println("Column size " + colnum);
+
+		List<WebElement> rows = driver.findElements(By.xpath("//table[@id='indicesTable']/tbody/tr"));
+		int rownum = rows.size();
+		System.out.println("Rows " + rownum);
+		// row data
+		for (int i = 1; i <= colnum; i++) {
+			String data = driver.findElement(By.xpath("//table[@id='indicesTable']/tbody/tr[1]/td[" + i + "]"))
+					.getText();
+			System.out.print(data + " | ");
+		}
+		System.out.println("====Column data====");
+		// column data
+		for (int i = 1; i <= rownum; i++) {
+			String data = driver.findElement(By.xpath("//table[@id='indicesTable']/tbody/tr[" + i + "]/td[1]"))
+					.getText();
+
+			System.out.println(data);
+		}
+
+		System.out.println("====Complete table data====");
+		for (int i = 1; i <= rownum; i++) {
+			for (int j = 1; j <= colnum; j++) {
+				String data = driver
+						.findElement(By.xpath("//table[@id='indicesTable']/tbody/tr[" + i + "]/td[" + j + "]"))
+						.getText();
+				System.out.print(data + " | ");
+			}
+			System.out.println();
+		}
+	}
+
 	public void multipletabs() {
 		LinkedHashSet<String> lset = new LinkedHashSet<>();
 		driver.get("https://www.naukri.com/");
@@ -42,7 +112,7 @@ public class Scripts {
 		WebElement servicestab = driver.findElement(By.xpath("//div[normalize-space()='Services']"));
 
 		WebElement companiesTab = driver.findElement(By.xpath("//div[normalize-space()='Companies']"));
-		
+
 		Actions action = new Actions(driver);
 
 		action.keyDown(Keys.CONTROL).click(servicestab).keyUp(Keys.CONTROL).build().perform();
@@ -64,23 +134,22 @@ public class Scripts {
 		System.out.println(tid + "\n" + driver.getTitle());
 	}
 
-
 	public void handlemultipleWindows() {
 		driver.get("https://www.naukri.com/");
 		String firstId = driver.getWindowHandle();
 		System.out.println(driver.getCurrentUrl());
 		WebElement services = driver.findElement(By.xpath("//div[normalize-space()='Services']"));
 		services.click();
-		
-		Set<String>  allId = driver.getWindowHandles();
-		allId.forEach(x->{
-			if(!x.equals(firstId)) {
+
+		Set<String> allId = driver.getWindowHandles();
+		allId.forEach(x -> {
+			if (!x.equals(firstId)) {
 				driver.switchTo().window(x);
-				System.out.println(driver.getCurrentUrl());	
-			//	driver.close();
-				}
+				System.out.println(driver.getCurrentUrl());
+				// driver.close();
+			}
 		});
-		
+
 		driver.switchTo().window(firstId);
 		System.out.println(driver.getCurrentUrl());
 	}
@@ -276,7 +345,7 @@ public class Scripts {
 	public void launchBrowser() throws InterruptedException {
 		driver = new ChromeDriver();
 		driver.manage().window().maximize();
-		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+//		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 //		Thread.sleep(1000);
 //		driver.quit();
 
