@@ -34,6 +34,13 @@ public class PriorityDemo {
 		System.out.println("Dependent method");
 	}
 	
+	@Test (expectedExceptions = ArithmeticException.class)
+	public void testException() {
+		int a=10;
+		int b =0;
+		System.out.println(a/b);
+	}
+	
 	
 	
 	
