@@ -1,6 +1,5 @@
-package testngParamterandgroups;
+package testngLinstenersdemo;
 
-import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 import graphql.Assert;

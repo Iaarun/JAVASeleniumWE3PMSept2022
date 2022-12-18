@@ -2,6 +2,8 @@ package seleniumScripts;
 
 import java.awt.RenderingHints.Key;
 import java.awt.Robot;
+import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -12,10 +14,13 @@ import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.io.FileHandler;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -31,22 +36,38 @@ public class Scripts {
 
 	WebDriver driver;
 
-	public static void main(String[] args) throws InterruptedException {
+	public static void main(String[] args) throws InterruptedException, IOException {
 		Scripts sc = new Scripts();
 		sc.launchBrowser();
-		sc.selSynchronization();
+		sc.captureScreenShot();
 	}
-	
-	
-	
+
+	public void captureScreenShot() throws IOException {
+		driver.get("https://jqueryui.com/slider/");
+		WebElement frame = driver.findElement(By.xpath("//iframe[@class='demo-frame']"));
+		File file = frame.getScreenshotAs(OutputType.FILE);
+		FileHandler.copy(file, new File("D:\\screenshot\\frame.png"));
+		driver.switchTo().frame(0);
+		WebElement slider = driver.findElement(By.xpath("//div[@id='slider']/span"));
+
+		Actions action = new Actions(driver);
+		action.clickAndHold(slider).moveByOffset(500, 0).release().build().perform();
+
+		TakesScreenshot ts = ((TakesScreenshot) driver);
+		file = ts.getScreenshotAs(OutputType.FILE);
+		FileHandler.copy(file, new File("D:\\screenshot\\slider.png"));
+
+	}
+
 	public void selSynchronization() {
 		driver.get("https://bonigarcia.dev/selenium-webdriver-java/loading-images.html");
 		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
-		
+
 		wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//p[contains(text(), 'Done')]")));
-		WebElement imgloaded= driver.findElement(By.xpath("//p[contains(text(), 'Done')]"));
+		WebElement imgloaded = driver.findElement(By.xpath("//p[contains(text(), 'Done')]"));
 		System.out.println(imgloaded.getText());
 	}
+
 	public void handleCalender() {
 		driver.get("https://jqueryui.com/datepicker/");
 		driver.switchTo().frame(0);

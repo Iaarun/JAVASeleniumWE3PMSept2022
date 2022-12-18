@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="ListenersSuite">
+<listeners>
+<listener class-name="testngLinstenersdemo.MyListeners"></listener>
+</listeners>
+  <test thread-count="5" name="Test">
+    <classes>
+      <class name="testngLinstenersdemo.TestClass"/>
+      <class name="testngLinstenersdemo.TestInterface"/>
+    </classes>
+  </test> <!-- Test -->
+</suite> <!-- ListenersSuite -->
